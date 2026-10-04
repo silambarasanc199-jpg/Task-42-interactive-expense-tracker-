@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ExpenseFlow | Day 42</title>
+
+  <meta
+    name="description"
+    content="Interactive Expense Tracker Web Application built with HTML, CSS, JavaScript and LocalStorage."
+  >
+
+  <meta name="theme-color" content="#07111f">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">₹</div>
+
+      <div>
+        <h1>ExpenseFlow</h1>
+        <p>Interactive Expense Tracker</p>
+      </div>
+    </div>
+
+    <div class="status">
+      <span class="status-dot"></span>
+      Local Storage
+    </div>
+  </header>
+
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <!-- PAGE INTRO -->
+    <section class="page-heading">
+
+      <div>
+        <span class="eyebrow">VEDA TECHNOLOGY • DAY 42</span>
+
+        <h2>Expense Dashboard</h2>
+
+        <p>
+          Track, organize and understand your personal expenses
+          with a simple browser-based dashboard.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="danger-outline"
+        id="clearAllBtn"
+      >
+        Clear All
+      </button>
+
+    </section>
+
+
+    <!-- SUMMARY -->
+    <section class="summary-grid">
+
+      <article class="summary-card primary-card">
+        <div class="summary-icon">₹</div>
+
+        <div>
+          <span>Total Spending</span>
+          <strong id="totalAmount">₹0.00</strong>
+        </div>
+      </article>
+
+
+      <article class="summary-card">
+        <div class="summary-icon">#</div>
+
+        <div>
+          <span>Total Expenses</span>
+          <strong id="expenseCount">0</strong>
+        </div>
+      </article>
+
+
+      <article class="summary-card">
+        <div class="summary-icon">◉</div>
+
+        <div>
+          <span>Visible Expenses</span>
+          <strong id="visibleCount">0</strong>
+        </div>
+      </article>
+
+
+      <article class="summary-card">
+        <div class="summary-icon">◆</div>
+
+        <div>
+          <span>Categories Used</span>
+          <strong id="categoryCount">0</strong>
+        </div>
+      </article>
+
+    </section>
+
+
+    <!-- EXPENSE FORM -->
+    <section class="panel">
+
+      <div class="panel-heading">
+
+        <div>
+          <span class="section-label">EXPENSE MANAGEMENT</span>
+
+          <h3 id="formTitle">Add New Expense</h3>
+
+          <p>
+            Enter the details below to record an expense.
+          </p>
+        </div>
+
+      </div>
+
+
+      <form id="expenseForm" novalidate>
+
+        <input
+          type="hidden"
+          id="expenseId"
+        >
+
+
+        <div class="form-grid">
+
+          <!-- TITLE -->
+          <div class="field">
+
+            <label for="title">
+              Expense Title
+            </label>
+
+            <input
+              type="text"
+              id="title"
+              placeholder="e.g. Lunch"
+              maxlength="80"
+              required
+            >
+
+            <small class="field-error" id="titleError"></small>
+
+          </div>
+
+
+          <!-- AMOUNT -->
+          <div class="field">
+
+            <label for="amount">
+              Amount (INR)
+            </label>
+
+            <input
+              type="number"
+              id="amount"
+              placeholder="e.g. 250"
+              min="0.01"
+              step="0.01"
+              required
+            >
+
+            <small class="field-error" id="amountError"></small>
+
+          </div>
+
+
+          <!-- CATEGORY -->
+          <div class="field">
+
+            <label for="category">
+              Category
+            </label>
+
+            <select id="category" required>
+
+              <option value="">
+                Select category
+              </option>
+
+              <option value="Food">
+                Food
+              </option>
+
+              <option value="Transport">
+                Transport
+              </option>
+
+              <option value="Shopping">
+                Shopping
+              </option>
+
+              <option value="Bills">
+                Bills
+              </option>
+
+              <option value="Education">
+                Education
+              </option>
+
+              <option value="Entertainment">
+                Entertainment
+              </option>
+
+              <option value="Health">
+                Health
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+
+            </select>
+
+            <small class="field-error" id="categoryError"></small>
+
+          </div>
+
+
+          <!-- DATE -->
+          <div class="field">
+
+            <label for="date">
+              Date
+            </label>
+
+            <input
+              type="date"
+              id="date"
+              required
+            >
+
+            <small class="field-error" id="dateError"></small>
+
+          </div>
+
+        </div>
+
+
+        <!-- FORM ACTIONS -->
+        <div class="form-actions">
+
+          <button
+            type="submit"
+            class="primary-btn"
+            id="submitBtn"
+          >
+            Add Expense
+          </button>
+
+          <button
+            type="button"
+            class="secondary-btn"
+            id="resetBtn"
+          >
+            Reset
+          </button>
+
+        </div>
+
+        <p
+          class="form-message"
+          id="formMessage"
+          role="status"
+        ></p>
+
+      </form>
+
+    </section>
+
+
+    <!-- FILTER + EXPENSE LIST -->
+    <section class="panel">
+
+      <div class="panel-heading">
+
+        <div>
+          <span class="section-label">EXPENSE RECORDS</span>
+
+          <h3>Manage Expenses</h3>
+
+          <p>
+            Search, filter and sort your expense records.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- FILTER BAR -->
+      <div class="filter-grid">
+
+        <div class="field">
+
+          <label for="searchInput">
+            Search
+          </label>
+
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="Search expenses..."
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="categoryFilter">
+            Category
+          </label>
+
+          <select id="categoryFilter">
+
+            <option value="all">
+              All Categories
+            </option>
+
+            <option value="Food">
+              Food
+            </option>
+
+            <option value="Transport">
+              Transport
+            </option>
+
+            <option value="Shopping">
+              Shopping
+            </option>
+
+            <option value="Bills">
+              Bills
+            </option>
+
+            <option value="Education">
+              Education
+            </option>
+
+            <option value="Entertainment">
+              Entertainment
+            </option>
+
+            <option value="Health">
+              Health
+            </option>
+
+            <option value="Other">
+              Other
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="dateFilter">
+            Date
+          </label>
+
+          <select id="dateFilter">
+
+            <option value="all">
+              All Dates
+            </option>
+
+            <option value="today">
+              Today
+            </option>
+
+            <option value="week">
+              Last 7 Days
+            </option>
+
+            <option value="month">
+              This Month
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="sortSelect">
+            Sort
+          </label>
+
+          <select id="sortSelect">
+
+            <option value="newest">
+              Newest First
+            </option>
+
+            <option value="oldest">
+              Oldest First
+            </option>
+
+            <option value="high">
+              Amount: High → Low
+            </option>
+
+            <option value="low">
+              Amount: Low → High
+            </option>
+
+            <option value="az">
+              Title: A → Z
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- LIST -->
+      <div
+        class="expense-list"
+        id="expenseList"
+      ></div>
+
+
+      <!-- EMPTY STATE -->
+      <div
+        class="empty-state"
+        id="emptyState"
+      >
+
+        <div class="empty-icon">₹</div>
+
+        <h4>No expenses found</h4>
+
+        <p>
+          Add an expense or change your search and filter options.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- SPENDING SUMMARY -->
+    <section class="panel">
+
+      <div class="panel-heading">
+
+        <div>
+          <span class="section-label">
+            SPENDING ANALYSIS
+          </span>
+
+          <h3>Category Summary</h3>
+
+          <p>
+            Understand how your expenses are distributed across categories.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div
+        class="category-summary"
+        id="categorySummary"
+      ></div>
+
+    </section>
+
+
+    <!-- DAY 42 IMPROVEMENTS -->
+    <section class="insight-grid">
+
+      <article class="insight-card">
+
+        <span class="section-label">
+          DAY 42
+        </span>
+
+        <h3>Dynamic Dashboard</h3>
+
+        <p>
+          Summary cards and category analysis update automatically
+          whenever expense records change.
+        </p>
+
+      </article>
+
+
+      <article class="insight-card">
+
+        <span class="section-label">
+          DATA STORAGE
+        </span>
+
+        <h3>Browser Persistence</h3>
+
+        <p>
+          Expense records remain available after refreshing the page
+          through browser LocalStorage.
+        </p>
+
+      </article>
+
+
+      <article class="insight-card">
+
+        <span class="section-label">
+          USER CONTROL
+        </span>
+
+        <h3>Full CRUD Workflow</h3>
+
+        <p>
+          Users can create, view, update and delete their own
+          expense records without a backend.
+        </p>
+
+      </article>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <div>
+      <strong>ExpenseFlow</strong>
+      <span>Interactive Expense Tracker</span>
+    </div>
+
+    <p>
+      Veda Technology Web Development Internship • Day 42
+    </p>
+
+    <p>
+      © <span id="currentYear"></span> Silambarasan C
+    </p>
+
+  </footer>
+
+
+  <!-- SCRIPT -->
+  <script src="script.js"></script>
+
+</body>
+                            </html>
